@@ -1,6 +1,6 @@
 {
   "name": "ccc-less-compiler",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Interface to LESS compiler for CCC component hierarchy (used by atom-compile-less).",
   "main": "ccc-less-compiler.js",
   "type": "module",
