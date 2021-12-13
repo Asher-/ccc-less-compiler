@@ -1,0 +1,23 @@
+{
+  "name": "ccc-less-compiler",
+  "version": "1.0.0",
+  "description": "Interface to LESS compiler for CCC component hierarchy (used by atom-compile-less).",
+  "main": "ccc-less-compiler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Asher-/ccc-less-compiler.git"
+  },
+  "author": "Asher Haig",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Asher-/ccc-less-compiler/issues"
+  },
+  "homepage": "https://github.com/Asher-/ccc-less-compiler#readme",
+  "dependencies": {
+    "less": "^4.1.2",
+    "node-fs": "^0.1.7"
+  }
+}
