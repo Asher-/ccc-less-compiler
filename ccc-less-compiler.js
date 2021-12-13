@@ -1,13 +1,11 @@
-const path = require( 'path' );
-const fs = require( 'fs' );
-less = require("less");
-const mkdir = require( '../node_modules/node-fs/lib/fs.js' );
 
-const { constants, promises: { access } } = require('fs');
+import * as fs from 'fs';
+import * as path from 'path';
+import less from 'less';
 
 class CCCLessCompiler {
 
-  constructor( state, less_input_path, settings = {
+  constructor( less_input_path, settings = {
     less_file_extension:                 '.less',
     css_file_extension:                  '.css',
     sourcemap_file_extension:            'less.sourcemap',
@@ -70,6 +68,9 @@ class CCCLessCompiler {
       this.css_output_directory_path,
       this.output_filename
     );
+    this.css_output_path_fragment = this.css_output_path;
+    if ( this.css_output_path.startsWith( this.project_root_path ) )
+      this.css_output_path_fragment = this.css_output_path_fragment.slice(this.project_root_path.length+1);
   }
 
   initRootRelativeOutputPath() {
@@ -148,7 +149,7 @@ class CCCLessCompiler {
     // test for style dir => slice off
 
     let relative_output_path = path_without_project_root;
-    for ( this_less_input_dir of this.settings.less_input_directory_relative_paths ) {
+    for ( let this_less_input_dir of this.settings.less_input_directory_relative_paths ) {
 
       relative_output_path   = this.pathRemainder(
                                  this_less_input_dir,
@@ -183,15 +184,14 @@ class CCCLessCompiler {
     while ( cwd = process.cwd() ) {
       try {
         let look_for_package_json = cwd + '/package.json'
-        await access(look_for_package_json, constants.F_OK);
-        break;
-      } catch ( access_err ) {
-        try {
+        if ( fs.existsSync(look_for_package_json) )
+          break;
+        else try {
           process.chdir('..');
         } catch ( chdir_err ) {
           console.error(chdir_err);
         }
-      }
+      } catch (e) {};
     }
     return cwd;
   }
@@ -201,10 +201,8 @@ class CCCLessCompiler {
                                + this.settings.sourcemap_file_extension;
   }
 
-  compile( file_path ) {
+  compile() {
     delete this.output;
-    this.loadConfigSettings();
-    this.initPaths( file_path );
     return this.valid
          ? fs.readFile(
              this.less_input_path,
@@ -235,8 +233,8 @@ class CCCLessCompiler {
 
       let self = this;
       less.render( less_input, options )
-          .then(   (output) => { self.renderDidFinish(output) } )
-          .catch(  (error) => { self.notify(error.message) } );
+          .then(   (output) => { self.renderDidFinish(output); } )
+          .catch(  (error) => { self.notify(error.message); } );
     }
 
   }
@@ -259,7 +257,7 @@ class CCCLessCompiler {
   }
 
   outputFile() {
-    mkdir.mkdir( this.css_output_directory_path, 0744, true, ( error ) => {
+    fs.mkdir( this.css_output_directory_path, { recursive: true}, ( error ) => {
       if ( error )
         this.notify( error );
       else
@@ -273,7 +271,6 @@ class CCCLessCompiler {
        this.output.css,
        ( error ) => { this.notify( error ) }
      );
-
     if ( this.settings.should_create_sourcemap && ! this.settings.should_inline_sourcemap )
       fs.writeFile(
          this.sourcemap_output_path,
@@ -293,7 +290,7 @@ class CCCLessCompiler {
   }
 
   notifySuccess() {
-    console.error( this.less_input_path + ' => ' + this.css_output_path);
+    console.error( this.less_input_path + ' => ' + this.css_output_path_fragment);
   }
 
   notifyNoOutput() {
@@ -313,3 +310,4 @@ class CCCLessCompiler {
 }
 
 export default CCCLessCompiler;
+export { CCCLessCompiler };

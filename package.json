@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Interface to LESS compiler for CCC component hierarchy (used by atom-compile-less).",
   "main": "ccc-less-compiler.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/Asher-/ccc-less-compiler#readme",
   "dependencies": {
+    "file-set": "^5.1.2",
     "less": "^4.1.2",
     "node-fs": "^0.1.7"
   }
